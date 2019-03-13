@@ -156,6 +156,13 @@ namespace nwacc
 			this->remove(key, this->root);
 		}
 
+		/**
+		 * @returns the value associated with the given key
+		 */
+		T get(const K & key)
+		{
+			return this->get(key,this->root);
+		}
 #pragma endregion
 
 
