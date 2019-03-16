@@ -1,6 +1,11 @@
-#include "avl_tree.h"
+#include "map.h"
 #include<string>
+#include <iostream>
 #include <fstream>
+
+/**
+ *
+ */
 std::string get_name(std::string file_path) {
 	std::ifstream in_file;
 	in_file.open(file_path);
@@ -17,51 +22,57 @@ std::string get_name(std::string file_path) {
 // change this for your system.
 const std::string filePath = "Test.csv";
 
+const int target_size = 50;
+
+
 int main()
 {
 	std::cout << filePath << std::endl;
 	
-	int numbers[8] = { 1,2,5,8,4,5,15,20 };
 	std::cout << "working" << std::endl;
-	nwacc::avl_tree<std::string, int> my_tree;
-	int x = 0;
-	while (x < 50)
+	nwacc::map<std::string, int> my_tree;
+	int key_for_later = 0;
+	while (my_tree.size() < target_size)
 	{
-
-		auto test = my_tree.insert(get_name(filePath), x);
-		x++;
+		auto id = std::rand();
+		if (!my_tree.contains_key(id)) {
+			if(key_for_later<id)
+			{
+				key_for_later = id;
+			}
+			auto test = my_tree.insert(get_name(filePath), id);
+		}
 	}
 	std::cout << "------------" << std::endl << std::endl;
 
-	for (nwacc::avl_tree<std::string, int>::iterator current_item = my_tree.first(); current_item != my_tree.end(); current_item++)
+	for (nwacc::map<std::string, int>::iterator current_item = my_tree.first(); current_item != my_tree.end(); current_item++)
 	{
 		std::cout << /*current_item.get_info()*/ *current_item <<std::endl;
 	}
 	std::cout << std::endl;
 	std::cout << std::endl;
-	for (nwacc::avl_tree<std::string, int>::iterator current_item = my_tree.last(); current_item != my_tree.begin(); current_item--)
+	for (nwacc::map<std::string, int>::iterator current_item = my_tree.last(); current_item != my_tree.begin(); current_item--)
 	{
 		std::cout << /*current_item.get_info()*/ *current_item << std::endl;
 	}
 	std::cout << "testing the operators." << std::endl << std::endl;
 
-	nwacc::avl_tree<std::string, int> new_map = my_tree;
-	std::cout<< *new_map[45] <<std::endl;
+	nwacc::map<std::string, int> new_map = my_tree;
+	std::cout<< *new_map[key_for_later] <<std::endl;
 	std::cout << "------------" << std::endl << std::endl;
-	std::cout << (*new_map[45] = "john") << std::endl;
+	std::cout << (*new_map[key_for_later] = "john") << std::endl;
 	std::cout << "------------" << std::endl << std::endl;
-	for (nwacc::avl_tree<std::string, int>::iterator current_item = new_map.first(); current_item != new_map.end(); current_item++)
+	for (nwacc::map<std::string, int>::iterator current_item = new_map.first(); current_item != new_map.end(); current_item++)
 	{
 		std::cout << /*current_item.get_info()*/ *current_item << std::endl;
 	}
 	std::cout << "------------" << std::endl << std::endl;
-	for (nwacc::avl_tree<std::string, int>::iterator current_item = new_map.last(); current_item != new_map.begin(); current_item--)
+	for (nwacc::map<std::string, int>::iterator current_item = new_map.last(); current_item != new_map.begin(); current_item--)
 	{
 		std::cout << /*current_item.get_info()*/ *current_item << std::endl;
 	}
 	std::cout << "------------" << std::endl << std::endl;
 	std::cout << new_map << std::endl;
-
 
 	system("pause");
 	return 0;

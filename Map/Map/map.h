@@ -1,15 +1,14 @@
-#ifndef AVL_TREE_H_
-#define AVL_TREE_H_
+#ifndef MAP_H_
+#define MAP_H_
 
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
 #include <string>
-#define COUNT 10
 namespace nwacc
 {
 	template<typename T, typename K>
-	class avl_tree
+	class map
 	{
 	private:
 		/**
@@ -34,10 +33,13 @@ namespace nwacc
 				right{ the_right }, parent(the_parent), key{ std::move(the_key) }, height{ the_height } {}
 		};
 	public:
-		#pragma region iterators
+#pragma region iterators
 		class const_iterator
 		{
 		public:
+			/**
+			 *@returns the key value of the current node
+			 */
 			K& get_key()
 			{
 				return current->key;
@@ -193,7 +195,7 @@ namespace nwacc
 			 *summary
 			 *makes linked_list<T,K> a friend of this class so it has access to the protected elements and methods.
 			 */
-			friend class avl_tree<T,K>;
+			friend class map<T,K>;
 		};
 
 		class iterator : public const_iterator
@@ -335,10 +337,17 @@ namespace nwacc
 			 *summary
 			 *makes the avl tree class a friend of this class so it has access to its attributes and methods.
 			 */
-			friend class avl_tree<T,K>;
+			friend class map<T,K>;
 		};
 #pragma endregion 
 #pragma region public
+		/**
+		 *@returns the size of the map
+		 */
+		int size()
+		{
+			return my_size;
+		}
 		/**
 		 * @ return returns an iterator to a nullptr indicating that there are no more nodes;
 		 */
@@ -374,26 +383,26 @@ namespace nwacc
 		/**
 		 *this is the default constructor
 		 */
-		avl_tree() : root{ nullptr } {}
+		map() : root{ nullptr } {}
 
 		/**
 		 *this constructor creates a copy of another map
 		 */
-		avl_tree(const avl_tree & rhs) : root{ nullptr }
+		map(const map & rhs) : root{ nullptr }
 		{
 			this->root = this->clone(rhs.root);
 		}
 		/**
 		 *this constructor creates a copy of another map
 		 */
-		avl_tree(avl_tree && rhs) : root{ rhs.root }
+		map(map && rhs) : root{ rhs.root }
 		{
 			rhs.root = nullptr;
 		}
 		/**
 		 *this is the deconstructor.
 		 */
-		~avl_tree()
+		~map()
 		{
 			this->empty();
 		}
@@ -401,7 +410,7 @@ namespace nwacc
 		 *swaps the right hand side with the left.
 		 *@param rhs
 		 */
-		avl_tree & operator=(const avl_tree & rhs)
+		map & operator=(const map & rhs)
 		{
 			auto copy = rhs;
 			std::swap(*this, copy);
@@ -410,14 +419,16 @@ namespace nwacc
 		/**
 		 *swaps the right hand side with the left.
 		 *@param rhs
+		 *@returns map
 		 */
-		avl_tree & operator=(avl_tree && rhs)
+		map & operator=(map && rhs)
 		{
 			std::swap(this->root, rhs.root);
 			return *this;
 		}
 		/**
 		 *checks if the map is empty
+		 *returns bool
 		 */
 		bool is_empty() const
 		{
@@ -433,11 +444,25 @@ namespace nwacc
 
 		/**
 		 *checks the map for the given value
+		 *@param value
+		 *@param current
+		 *@returns bool
 		 */
-		bool contains(const T & value) const
+		bool contains_value( T & value) const
 		{
-			return this->contains(value, this->root);
+			return this->contains_value(value, this->root);
 		}
+
+		/**
+		 *checks the map for the given value
+		 *@param key
+		 *@returns bool
+		 */
+		bool contains_key( K & key) const
+		{
+			return this->contains_key(key, this->root);
+		}
+
 		/**
 		 *@returns the smallest value in the map
 		 */
@@ -470,6 +495,7 @@ namespace nwacc
 		 *inserts the given value into the map
 		 *@param value
 		 *@param key
+		 *@returns iterator
 		 */
 		iterator insert(const T & value,const K & key)
 		{
@@ -479,10 +505,11 @@ namespace nwacc
 		 *inserts the given value into the map
 		 *@param value
 		 *@param key
+		 *@returns iterator
 		 */
 		iterator insert(T && value,K && key)
 		{
-			this->insert(std::move(value),std::move(key), this->root);
+			return this->insert(std::move(value),std::move(key), this->root);
 		}
 		/**
 		 *removes the given value form the map
@@ -502,19 +529,28 @@ namespace nwacc
 		}
 #pragma endregion
 #pragma region overloads
-		
+		/**
+		 *@returns iterator for the node with the given key
+		 */
 		iterator operator[](K & key)
 		{
 			return get(key,this->root);
 		}
-
+		/**
+		 *@returns iterator for the node with the given key
+		 */
 		iterator operator[](K && key)
 		{
 			return get_key_iterator(key, this->root);
 			
 		}
-
-		friend std::ostream & operator<< (std::ostream & out, const avl_tree &rhs)
+		/**
+		 *formats the map for output to an ostream.
+		 *@param out
+		 *@param rhs
+		 *@returns ostream&
+		 */
+		friend std::ostream & operator<< (std::ostream & out, const map &rhs)
 		{
 			for (iterator current_item = rhs.first(); current_item != rhs.end(); current_item++)
 			{
@@ -531,11 +567,16 @@ namespace nwacc
 #pragma endregion 
 
 	private:
-		
+
+#pragma region private
+
 		/**
 		 * the first node inserted into the map
 		 */
 		node * root;
+
+		int my_size=0;
+
 		/**
 		 *returns the value associated with the given key
 		 *@param key
@@ -544,11 +585,11 @@ namespace nwacc
 		 */
 		T get(K key, node * current)
 		{
-			if(current == nullptr)
+			if (current == nullptr)
 			{
 				return {};
 			}
-			if(current->key < key)
+			if (current->key < key)
 			{
 				get(key, current->right);
 			}
@@ -617,22 +658,23 @@ namespace nwacc
 		 *@param current
 		 *@param previous
 		 */
-		iterator insert(const T & value,const K & key, node * & current, node * previous = nullptr)
+		iterator insert(const T & value, const K & key, node * & current, node * previous = nullptr)
 		{
 			if (current == nullptr)
 			{
 				current = new node{ value, nullptr, nullptr,
-					((previous == nullptr)? nullptr : previous),
+					((previous == nullptr) ? nullptr : previous),
 					key };
+				my_size++;
 			}
 			else if (key < current->key)
 			{
-				this->insert(value,key, current->left,current);
+				this->insert(value, key, current->left, current);
 			}
- 			else if (current->key < key)
+			else if (current->key < key)
 			{
-				this->insert(value,key, current->right,current);
-			} 
+				this->insert(value, key, current->right, current);
+			}
 			else
 			{
 				current->element = value;
@@ -655,14 +697,15 @@ namespace nwacc
 				current = new node{ std::move(value), nullptr, nullptr,
 				((previous == nullptr) ? nullptr : previous),
 					std::move(key) };
+				my_size++;
 			}
 			else if (key < current->key)
 			{
-				this->insert(std::move(value), std::move(key), current->left,current);
+				this->insert(std::move(value), std::move(key), current->left, current);
 			}
 			else if (current->key < key)
 			{
-				this->insert(std::move(value), std::move(key), current->right,current);
+				this->insert(std::move(value), std::move(key), current->right, current);
 			}
 			else
 			{
@@ -683,7 +726,7 @@ namespace nwacc
 			if (current == nullptr)
 			{
 				// we did not find the item to remove. 
-				return; 
+				return;
 			} // else, we found the item do_nothing();
 
 			if (key < current->key)
@@ -706,6 +749,7 @@ namespace nwacc
 				node * old_node = current;
 				current = (current->left != nullptr) ? current->left : current->right;
 				delete old_node;
+				my_size--;
 			}
 
 			this->balance(current);
@@ -716,19 +760,19 @@ namespace nwacc
 		 *@param current
 		 *@returns bool
 		 */
-		bool contains_value(const T & value, node * current) const
+		bool contains_value( T & value, node * current) const
 		{
 			if (current == nullptr)
 			{
 				return false; // Does not exist in the tree :(
-			} 
+			}
 			else if (value < current->element)
 			{
-				return this->contains(value, current->left);
-			} 
+				return this->contains_value(value, current->left);
+			}
 			else if (current->element < value)
 			{
-				return this->contains(value, current->right);
+				return this->contains_value(value, current->right);
 			}
 			else
 			{
@@ -742,19 +786,19 @@ namespace nwacc
 		 *@param current
 		 *@returns bool
 		 */
-		bool contains_key(const K & key, node * current) const
+		bool contains_key( K & key, node * current) const
 		{
 			if (current == nullptr)
 			{
 				return false; // Does not exist in the tree :(
 			}
-			else if (key < current->element)
+			else if (key < current->key)
 			{
-				return this->contains(key, current->left);
+				return this->contains_key(key, current->left);
 			}
-			else if (current->element < key)
+			else if (current->key < key)
 			{
-				return this->contains(key, current->right);
+				return this->contains_key(key, current->right);
 			}
 			else
 			{
@@ -809,8 +853,8 @@ namespace nwacc
 		}
 
 		/**
-		 * Rotate binary tree node with left child. This is a 
-		 * single rotation. 
+		 * Rotate binary tree node with left child. This is a
+		 * single rotation.
 		 * @param current
 		 */
 		void rotate_with_left_child(node * & current)
@@ -820,18 +864,18 @@ namespace nwacc
 			temp->right = current;
 			temp->parent = current->parent;
 			current->parent = temp;
-			if (current->right->parent != current)
+			if (current->right!=nullptr && current->right->parent != current)
 			{
 				current->right->parent = current;
 			}
-			if (current->left->parent != current)
+			if (current->left != nullptr &&current->left->parent != current)
 			{
 				current->left->parent = current;
 			}
 
 			current->height = std::max(this->height(current->left), this->height(current->right)) + 1;
 			temp->height = std::max(this->height(temp->left), current->height) + 1;
-			
+
 			current = temp;
 		}
 		/**
@@ -846,7 +890,7 @@ namespace nwacc
 			temp->left = current;
 			temp->parent = current->parent;
 			current->parent = temp;
-			if(current->right != nullptr && current->right->parent != current)
+			if (current->right != nullptr && current->right->parent != current)
 			{
 				current->right->parent = current;
 			}
@@ -862,7 +906,7 @@ namespace nwacc
 
 		/**
 		 * Double rotate binary tree node - first rotate the left child
-		 * with its right child; then with the new left child. 
+		 * with its right child; then with the new left child.
 		 * @param current
 		 */
 		void double_rotate_with_left_child(node * & current)
@@ -892,7 +936,7 @@ namespace nwacc
 				return;
 			} // else, we have a valid node do_nothing();
 
-			if (this->height(current->left) - 
+			if (this->height(current->left) -
 				this->height(current->right) > 1)
 			{
 				// left side has a greater height
@@ -906,11 +950,11 @@ namespace nwacc
 					this->double_rotate_with_left_child(current);
 				}
 			}
-			else if (this->height(current->right) - 
-				     this->height(current->left) > 1) 
+			else if (this->height(current->right) -
+				this->height(current->left) > 1)
 			{
 				// right side has a greater height
-				if (this->height(current->right->right) >= 
+				if (this->height(current->right->right) >=
 					this->height(current->right->left))
 				{
 					this->rotate_with_right_child(current);
@@ -925,7 +969,9 @@ namespace nwacc
 				this->height(current->left),
 				this->height(current->right)) + 1;
 		}
+#pragma endregion
+
 	};
 }
 
-#endif // AVL_TREE_H_
+#endif // Map_H_
