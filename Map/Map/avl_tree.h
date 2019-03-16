@@ -4,7 +4,8 @@
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
-
+#include <string>
+#define COUNT 10
 namespace nwacc
 {
 	template<typename T, typename K>
@@ -33,144 +34,28 @@ namespace nwacc
 				right{ the_right }, parent(the_parent), key{ std::move(the_key) }, height{ the_height } {}
 		};
 	public:
-#pragma region public
-		/**
- *this is the default constructor
- */
-		avl_tree() : root{ nullptr } {}
-
-		/**
-		 *this constructor creates a copy of another map
-		 */
-		avl_tree(const avl_tree & rhs) : root{ nullptr }
-		{
-			this->root = this->clone(rhs.root);
-		}
-		/**
-		 *this constructor creates a copy of another map
-		 */
-		avl_tree(avl_tree && rhs) : root{ rhs.root }
-		{
-			rhs.root = nullptr;
-		}
-		/**
-		 *this is the deconstructor.
-		 */
-		~avl_tree()
-		{
-			this->empty();
-		}
-		/**
-		 *swaps the right hand side with the left.
-		 *@param rhs
-		 */
-		avl_tree & operator=(const avl_tree & rhs)
-		{
-			auto copy = rhs;
-			std::swap(*this, copy);
-			return *this;
-		}
-		/**
-		 *swaps the right hand side with the left.
-		 *@param rhs
-		 */
-		avl_tree & operator=(avl_tree && rhs)
-		{
-			std::swap(this->root, rhs.root);
-			return *this;
-		}
-		/**
-		 *checks if the map is empty
-		 */
-		bool is_empty() const
-		{
-			return this->root == nullptr;
-		}
-		/**
-		 *empties out the map
-		 */
-		void empty()
-		{
-			this->empty(this->root);
-		}
-
-		/**
-		 *checks the map for the given value
-		 */
-		bool contains(const T & value) const
-		{
-			return this->contains(value, this->root);
-		}
-		/**
-		 *@returns the smallest value in the map
-		 */
-		const T & find_min() const
-		{
-			if (this->is_empty())
-			{
-				throw new std::range_error("Tree is empty");
-			}
-			else
-			{
-				return this->find_min(this->root)->element;
-			}
-		}
-		/**
-		 *@returns the largest value in the map
-		 */
-		const T & find_max() const
-		{
-			if (this->is_empty())
-			{
-				throw new std::range_error("Tree is empty");
-			}
-			else
-			{
-				return this->find_max(this->root)->element;
-			}
-		}
-		/**
-		 *inserts the given value into the map
-		 *@param value
-		 *@param key
-		 */
-		void insert(const T & value,const K & key)
-		{
-			this->insert(value, key, this->root);
-		}
-		/**
-		 *inserts the given value into the map
-		 *@param value
-		 *@param key
-		 */
-		void insert(T && value,K && key)
-		{
-			this->insert(std::move(value),std::move(key), this->root);
-		}
-		/**
-		 *removes the given value form the map
-		 *@param key
-		 */
-		void remove(const K & key)
-		{
-			this->remove(key, this->root);
-		}
-
-		/**
-		 * @returns the value associated with the given key
-		 */
-		T get(const K & key)
-		{
-			return this->get(key,this->root);
-		}
-#pragma endregion
-
-
-
-#pragma region iterators
+		#pragma region iterators
 		class const_iterator
 		{
 		public:
+			//tester
+			std::string get_info()
+			{
+				
+				std::string temp = "[" + ((this->current == nullptr) ? "null" : std::to_string(this->current->key)) +
+					"," + ((this->current->parent == nullptr) ? "null" : std::to_string(this->current->parent->key)) + "]";
+				return temp;
+			}
+			//tester
+			std::string get_info(const_iterator test)
+			{
+
+				std::string temp = "[" + ((test.current == nullptr) ? "null" : std::to_string(test.current->key)) +
+					"," + ((test.current->parent == nullptr) ? "null" : std::to_string(test.current->parent->key)) + "]";
+				return temp;
+			}
+
+
 			/**
 			 *the default constructor initializes the current pointer.
 			 */
@@ -365,7 +250,7 @@ namespace nwacc
 			 */
 			iterator & operator++ ()
 			{
-				if (this->current->right != nullptr) {
+					if (this->current->right != nullptr) {
 					this->current = this->find_left(this->current->right);
 					return *this;
 				}
@@ -466,9 +351,203 @@ namespace nwacc
 			friend class avl_tree<T,K>;
 		};
 #pragma endregion 
+#pragma region public
+		/**
+		 * @ return returns an iterator to a nullptr indicating that there are no more nodes;
+		 */
+		iterator begin() const
+		{
+			return iterator(nullptr);
+		}
+		/**
+		 *@returns an iterator to the smallest element in the set
+		 */
+		iterator first() const
+		{
+			return iterator(this->find_min(this->root));
+		}
+
+		/**
+		 * @ return returns an iterator to a nullptr indicating that there are no more nodes;
+		 */
+		iterator end() const
+		{
+			return iterator(nullptr);
+		}
+
+		/**
+		 *@returns an iterator to the largest element in the set
+		 */
+		iterator last() const
+		{
+			return iterator(this->find_max(this->root));
+		}
+
+
+		/**
+		 *this is the default constructor
+		 */
+		avl_tree() : root{ nullptr } {}
+
+		/**
+		 *this constructor creates a copy of another map
+		 */
+		avl_tree(const avl_tree & rhs) : root{ nullptr }
+		{
+			this->root = this->clone(rhs.root);
+		}
+		/**
+		 *this constructor creates a copy of another map
+		 */
+		avl_tree(avl_tree && rhs) : root{ rhs.root }
+		{
+			rhs.root = nullptr;
+		}
+		/**
+		 *this is the deconstructor.
+		 */
+		~avl_tree()
+		{
+			this->empty();
+		}
+		/**
+		 *swaps the right hand side with the left.
+		 *@param rhs
+		 */
+		avl_tree & operator=(const avl_tree & rhs)
+		{
+			auto copy = rhs;
+			std::swap(*this, copy);
+			return *this;
+		}
+		/**
+		 *swaps the right hand side with the left.
+		 *@param rhs
+		 */
+		avl_tree & operator=(avl_tree && rhs)
+		{
+			std::swap(this->root, rhs.root);
+			return *this;
+		}
+		/**
+		 *checks if the map is empty
+		 */
+		bool is_empty() const
+		{
+			return this->root == nullptr;
+		}
+		/**
+		 *empties out the map
+		 */
+		void empty()
+		{
+			this->empty(this->root);
+		}
+
+		/**
+		 *checks the map for the given value
+		 */
+		bool contains(const T & value) const
+		{
+			return this->contains(value, this->root);
+		}
+		/**
+		 *@returns the smallest value in the map
+		 */
+		iterator find_min() const
+		{
+			if (this->is_empty())
+			{
+				throw new std::range_error("Tree is empty");
+			}
+			else
+			{
+				return iterator(this->find_min(this->root));
+			}
+		}
+		/**
+		 *@returns the largest value in the map
+		 */
+		iterator find_max() const
+		{
+			if (this->is_empty())
+			{
+				throw new std::range_error("Tree is empty");
+			}
+			else
+			{
+				return iterator(this->find_max(this->root));
+			}
+		}
+		/**
+		 *inserts the given value into the map
+		 *@param value
+		 *@param key
+		 */
+		iterator insert(const T & value,const K & key)
+		{
+			return this->insert(value, key, this->root);
+		}
+		/**
+		 *inserts the given value into the map
+		 *@param value
+		 *@param key
+		 */
+		iterator insert(T && value,K && key)
+		{
+			this->insert(std::move(value),std::move(key), this->root);
+		}
+		/**
+		 *removes the given value form the map
+		 *@param key
+		 */
+		void remove(const K & key)
+		{
+			this->remove(key, this->root);
+		}
+
+		/**
+		 * @returns the value associated with the given key
+		 */
+		T get(const K & key)
+		{
+			return this->get(key,this->root);
+		}
+#pragma endregion
+#pragma region overloads
+		
+		iterator operator[](K & key)
+		{
+			return get(key,this->root);
+		}
+
+		iterator operator[](K && key)
+		{
+			return get_key_iterator(key, this->root);
+			
+		}
+
+		friend std::ostream & operator<< (std::ostream & out, const avl_tree &rhs)
+		{
+			for (iterator current_item = rhs.first(); current_item != rhs.end(); current_item++)
+			{
+				out << *current_item << std::endl;
+			}
+			out << std::endl;
+			out << std::endl;
+			for (iterator current_item = rhs.last(); current_item != rhs.begin(); current_item--)
+			{
+				out << *current_item << std::endl;
+			}
+			return out;
+		}
+#pragma endregion 
 
 	private:
 		
+
+
+
 		/**
 		 * the first node inserted into the map
 		 */
@@ -485,18 +564,29 @@ namespace nwacc
 			}
 			if(current->key < key)
 			{
-				get_key(key, current->right);
+				get(key, current->right);
 			}
 			else if (key < current->key)
 			{
-				get_key(key, current->left);
+				get(key, current->left);
 			}
-			else
+			return current->element;
+		}
+		iterator get_key_iterator(K key, node * current)
+		{
+			if (current == nullptr)
 			{
-				return current->element;
+				return {};
 			}
-
-			throw std::length_error("key does not exist");
+			if (current->key < key)
+			{
+				get(key, current->right);
+			}
+			else if (key < current->key)
+			{
+				get(key, current->left);
+			}
+			return iterator(current);
 		}
 
 		/**
@@ -525,7 +615,7 @@ namespace nwacc
 			if (current == nullptr)
 				return nullptr;
 			else
-				return new node{ current->element, clone(current->left), clone(current->right), current->height };
+				return new node{ current->element, clone(current->left), clone(current->right), current->parent, current->key, current->height };
 		}
 
 		/**
@@ -535,7 +625,7 @@ namespace nwacc
 		 *@param current
 		 *@param previous
 		 */
-		void insert(const T & value,const K & key, node * & current, node * previous = nullptr)
+		iterator insert(const T & value,const K & key, node * & current, node * previous = nullptr)
 		{
 			if (current == nullptr)
 			{
@@ -547,7 +637,7 @@ namespace nwacc
 			{
 				this->insert(value,key, current->left,current);
 			}
-			else if (current->key < key)
+ 			else if (current->key < key)
 			{
 				this->insert(value,key, current->right,current);
 			} 
@@ -557,6 +647,7 @@ namespace nwacc
 			}
 
 			this->balance(current);
+			return iterator(current);
 		}
 		/**
 		 *inserts the given value into the map
@@ -565,7 +656,7 @@ namespace nwacc
 		 *@param current
 		 *@param previous
 		 */
-		void insert(T && value, const K && key, node * & current, node * previous = nullptr)
+		iterator insert(T && value, const K && key, node * & current, node * previous = nullptr)
 		{
 			if (current == nullptr)
 			{
@@ -573,13 +664,13 @@ namespace nwacc
 				((previous == nullptr) ? nullptr : previous),
 					std::move(key) };
 			}
-			else if (value < current->element)
+			else if (key < current->key)
 			{
-				this->insert(std::move(value), current->left,current);
+				this->insert(std::move(value), std::move(key), current->left,current);
 			}
-			else if (current->element < value)
+			else if (current->key < key)
 			{
-				this->insert(std::move(value), current->right,current);
+				this->insert(std::move(value), std::move(key), current->right,current);
 			}
 			else
 			{
@@ -587,6 +678,7 @@ namespace nwacc
 			}
 
 			this->balance(current);
+			return iterator(current);
 		}
 
 		/**
@@ -734,6 +826,16 @@ namespace nwacc
 			auto * temp = current->left;
 			current->left = temp->right; // current->left->right;
 			temp->right = current;
+			temp->parent = current->parent;
+			current->parent = temp;
+			if (current->right->parent != current)
+			{
+				current->right->parent = current;
+			}
+			if (current->left->parent != current)
+			{
+				current->left->parent = current;
+			}
 
 			current->height = std::max(this->height(current->left), this->height(current->right)) + 1;
 			temp->height = std::max(this->height(temp->left), current->height) + 1;
@@ -750,7 +852,16 @@ namespace nwacc
 			auto * temp = current->right;
 			current->right = temp->left;
 			temp->left = current;
-
+			temp->parent = current->parent;
+			current->parent = temp;
+			if(current->right != nullptr && current->right->parent != current)
+			{
+				current->right->parent = current;
+			}
+			if (current->left != nullptr && current->left->parent != current)
+			{
+				current->left->parent = current;
+			}
 			current->height = std::max(this->height(current->left), this->height(current->right)) + 1;
 			temp->height = std::max(this->height(temp->right), current->height) + 1;
 
