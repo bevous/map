@@ -38,23 +38,10 @@ namespace nwacc
 		class const_iterator
 		{
 		public:
-			//tester
-			std::string get_info()
+			K& get_key()
 			{
-				
-				std::string temp = "[" + ((this->current == nullptr) ? "null" : std::to_string(this->current->key)) +
-					"," + ((this->current->parent == nullptr) ? "null" : std::to_string(this->current->parent->key)) + "]";
-				return temp;
+				return current->key;
 			}
-			//tester
-			std::string get_info(const_iterator test)
-			{
-
-				std::string temp = "[" + ((test.current == nullptr) ? "null" : std::to_string(test.current->key)) +
-					"," + ((test.current->parent == nullptr) ? "null" : std::to_string(test.current->parent->key)) + "]";
-				return temp;
-			}
-
 
 			/**
 			 *the default constructor initializes the current pointer.
@@ -531,13 +518,13 @@ namespace nwacc
 		{
 			for (iterator current_item = rhs.first(); current_item != rhs.end(); current_item++)
 			{
-				out << *current_item << std::endl;
+				out << current_item.get_key() << ", " << *current_item << std::endl;
 			}
 			out << std::endl;
 			out << std::endl;
 			for (iterator current_item = rhs.last(); current_item != rhs.begin(); current_item--)
 			{
-				out << *current_item << std::endl;
+				out << current_item.get_key() << ", " << *current_item <<  std::endl;
 			}
 			return out;
 		}
@@ -545,15 +532,14 @@ namespace nwacc
 
 	private:
 		
-
-
-
 		/**
 		 * the first node inserted into the map
 		 */
 		node * root;
 		/**
 		 *returns the value associated with the given key
+		 *@param key
+		 *@param current
 		 *@returns T
 		 */
 		T get(K key, node * current)
@@ -572,6 +558,12 @@ namespace nwacc
 			}
 			return current->element;
 		}
+		/**
+		 *returns the value associated with the given key
+		 *@param key
+		 *@param current
+		 *@returns iterator
+		 */
 		iterator get_key_iterator(K key, node * current)
 		{
 			if (current == nullptr)

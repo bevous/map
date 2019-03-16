@@ -31,7 +31,7 @@ int main()
 		auto test = my_tree.insert(get_name(filePath), x);
 		x++;
 	}
-	std::cout << "there are no problems inserting" << std::endl;
+	std::cout << "------------" << std::endl << std::endl;
 
 	for (nwacc::avl_tree<std::string, int>::iterator current_item = my_tree.first(); current_item != my_tree.end(); current_item++)
 	{
@@ -47,19 +47,19 @@ int main()
 
 	nwacc::avl_tree<std::string, int> new_map = my_tree;
 	std::cout<< *new_map[45] <<std::endl;
+	std::cout << "------------" << std::endl << std::endl;
 	std::cout << (*new_map[45] = "john") << std::endl;
+	std::cout << "------------" << std::endl << std::endl;
 	for (nwacc::avl_tree<std::string, int>::iterator current_item = new_map.first(); current_item != new_map.end(); current_item++)
 	{
 		std::cout << /*current_item.get_info()*/ *current_item << std::endl;
 	}
-	std::cout << std::endl;
-	std::cout << std::endl;
+	std::cout << "------------" << std::endl << std::endl;
 	for (nwacc::avl_tree<std::string, int>::iterator current_item = new_map.last(); current_item != new_map.begin(); current_item--)
 	{
 		std::cout << /*current_item.get_info()*/ *current_item << std::endl;
 	}
-
-	system("cls");
+	std::cout << "------------" << std::endl << std::endl;
 	std::cout << new_map << std::endl;
 
 
