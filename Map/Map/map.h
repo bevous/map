@@ -588,15 +588,15 @@ namespace nwacc
 			if (current == nullptr)
 			{
 				return {};
-			}
+			}//else, do_nothing()
 			if (current->key < key)
 			{
 				get(key, current->right);
-			}
+			}//else, do_nothing()
 			else if (key < current->key)
 			{
 				get(key, current->left);
-			}
+			}//else, do_nothing()
 			return current->element;
 		}
 		/**
@@ -610,15 +610,15 @@ namespace nwacc
 			if (current == nullptr)
 			{
 				return {};
-			}
+			}//else, do_nothing()
 			if (current->key < key)
 			{
 				get(key, current->right);
-			}
+			}//else, do_nothing()
 			else if (key < current->key)
 			{
 				get(key, current->left);
-			}
+			}//else, do_nothing()
 			return iterator(current);
 		}
 
@@ -645,10 +645,12 @@ namespace nwacc
 		 */
 		node * clone(node * current) const
 		{
-			if (current == nullptr)
+			if (current == nullptr) {
 				return nullptr;
-			else
-				return new node{ current->element, clone(current->left), clone(current->right), current->parent, current->key, current->height };
+			}
+			else {
+			return new node{ current->element, clone(current->left), clone(current->right), current->parent, current->key, current->height };
+			}
 		}
 
 		/**
@@ -839,7 +841,7 @@ namespace nwacc
 				{
 					current = current->right;
 				}
-			}
+			}//else, do_nothing()
 			return current;
 		}
 		/**
@@ -867,11 +869,11 @@ namespace nwacc
 			if (current->right!=nullptr && current->right->parent != current)
 			{
 				current->right->parent = current;
-			}
+			}//else, do_nothing()
 			if (current->left != nullptr &&current->left->parent != current)
 			{
 				current->left->parent = current;
-			}
+			}//else, do_nothing()
 
 			current->height = std::max(this->height(current->left), this->height(current->right)) + 1;
 			temp->height = std::max(this->height(temp->left), current->height) + 1;
@@ -893,11 +895,11 @@ namespace nwacc
 			if (current->right != nullptr && current->right->parent != current)
 			{
 				current->right->parent = current;
-			}
+			}//else, do_nothing()
 			if (current->left != nullptr && current->left->parent != current)
 			{
 				current->left->parent = current;
-			}
+			}//else, do_nothing()
 			current->height = std::max(this->height(current->left), this->height(current->right)) + 1;
 			temp->height = std::max(this->height(temp->right), current->height) + 1;
 
