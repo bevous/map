@@ -7,7 +7,7 @@
 #include <string>
 namespace nwacc
 {
-	template<typename T, typename K>
+	template<typename V, typename K>
 	class map
 	{
 	private:
@@ -17,19 +17,19 @@ namespace nwacc
 		struct node
 		{
 
-			T element;
+			V value;
 			node * left;
 			node * right;
 			node * parent;
 			K key;
 			int height;
 
-			node(const T & the_element, node * the_left, node * the_right,node * the_parent, const K & the_key, int the_height = 0)
-				: element{ the_element }, left{ the_left },
+			node(const V & the_element, node * the_left, node * the_right,node * the_parent, const K & the_key, int the_height = 0)
+				: value{ the_element }, left{ the_left },
 				right{ the_right }, parent(the_parent) , key{ the_key }, height{ the_height }{}
 
-			node(T && the_element, node * the_left, node * the_right, node * the_parent, const K & the_key, int the_height = 0)
-				: element{ std::move(the_element) }, left{ the_left },
+			node(V && the_element, node * the_left, node * the_right, node * the_parent, const K & the_key, int the_height = 0)
+				: value{ std::move(the_element) }, left{ the_left },
 				right{ the_right }, parent(the_parent), key{ std::move(the_key) }, height{ the_height } {}
 		};
 	public:
@@ -52,9 +52,9 @@ namespace nwacc
 
 			/**
 			 *summary
-			 *@returns T the element held in the current node.
+			 *@returns V the value held in the current node.
 			 */
-			const T & operator*() const
+			const V & operator*() const
 			{
 				return this->retrieve();
 			}
@@ -180,11 +180,11 @@ namespace nwacc
 			}
 			/**
 			 * summary
-			 * @return T returns the element held at the current node.
+			 * @return V returns the value held at the current node.
 			 */
-			T &retrieve() const
+			V &retrieve() const
 			{
-				return this->current->element;
+				return this->current->value;
 			}
 			/**
 			 * crates a new const_iterator at a given node pointer
@@ -193,9 +193,9 @@ namespace nwacc
 			const_iterator(node *current) : current{ current } {}
 			/**
 			 *summary
-			 *makes linked_list<T,K> a friend of this class so it has access to the protected elements and methods.
+			 *makes linked_list<V,K> a friend of this class so it has access to the protected elements and methods.
 			 */
-			friend class map<T,K>;
+			friend class map<V,K>;
 		};
 
 		class iterator : public const_iterator
@@ -209,9 +209,9 @@ namespace nwacc
 
 			/**
 			 * summary
-			 * @return T& returns the value held in the current node.
+			 * @return V& returns the value held in the current node.
 			 */
-			T & operator*()
+			V & operator*()
 			{
 				return const_iterator::retrieve();
 			}
@@ -222,9 +222,9 @@ namespace nwacc
 			// a reference return type. The accessor is shown first.
 			/**
 			 *summary
-			 *@return const T& returns the value held in the current node.
+			 *@return const V& returns the value held in the current node.
 			 */
-			const T & operator* () const
+			const V & operator* () const
 			{
 				return const_iterator::operator*();
 			}
@@ -337,7 +337,7 @@ namespace nwacc
 			 *summary
 			 *makes the avl tree class a friend of this class so it has access to its attributes and methods.
 			 */
-			friend class map<T,K>;
+			friend class map<V,K>;
 		};
 #pragma endregion 
 #pragma region public
@@ -356,7 +356,7 @@ namespace nwacc
 			return iterator(nullptr);
 		}
 		/**
-		 *@returns an iterator to the smallest element in the set
+		 *@returns an iterator to the smallest value in the set
 		 */
 		iterator first() const
 		{
@@ -372,7 +372,7 @@ namespace nwacc
 		}
 
 		/**
-		 *@returns an iterator to the largest element in the set
+		 *@returns an iterator to the largest value in the set
 		 */
 		iterator last() const
 		{
@@ -448,7 +448,7 @@ namespace nwacc
 		 *@param current
 		 *@returns bool
 		 */
-		bool contains_value( T & value) const
+		bool contains_value( V & value) const
 		{
 			return this->contains_value(value, this->root);
 		}
@@ -497,7 +497,7 @@ namespace nwacc
 		 *@param key
 		 *@returns iterator
 		 */
-		iterator insert(const T & value,const K & key)
+		iterator insert(const V & value,const K & key)
 		{
 			return this->insert(value, key, this->root);
 		}
@@ -507,7 +507,7 @@ namespace nwacc
 		 *@param key
 		 *@returns iterator
 		 */
-		iterator insert(T && value,K && key)
+		iterator insert(V && value,K && key)
 		{
 			return this->insert(std::move(value),std::move(key), this->root);
 		}
@@ -523,7 +523,7 @@ namespace nwacc
 		/**
 		 * @returns the value associated with the given key
 		 */
-		T get(const K & key)
+		V get(const K & key)
 		{
 			return this->get(key,this->root);
 		}
@@ -574,16 +574,19 @@ namespace nwacc
 		 * the first node inserted into the map
 		 */
 		node * root;
-
+		/**
+		 * the size of the map
+		 * 
+		 */
 		int my_size=0;
 
 		/**
 		 *returns the value associated with the given key
 		 *@param key
 		 *@param current
-		 *@returns T
+		 *@returns V
 		 */
-		T get(K key, node * current)
+		V get(K key, node * current)
 		{
 			if (current == nullptr)
 			{
@@ -597,7 +600,7 @@ namespace nwacc
 			{
 				get(key, current->left);
 			}//else, do_nothing()
-			return current->element;
+			return current->value;
 		}
 		/**
 		 *returns the value associated with the given key
@@ -649,7 +652,7 @@ namespace nwacc
 				return nullptr;
 			}
 			else {
-			return new node{ current->element, clone(current->left), clone(current->right), current->parent, current->key, current->height };
+			return new node{ current->value, clone(current->left), clone(current->right), current->parent, current->key, current->height };
 			}
 		}
 
@@ -660,7 +663,7 @@ namespace nwacc
 		 *@param current
 		 *@param previous
 		 */
-		iterator insert(const T & value, const K & key, node * & current, node * previous = nullptr)
+		iterator insert(const V & value, const K & key, node * & current, node * previous = nullptr)
 		{
 			if (current == nullptr)
 			{
@@ -679,7 +682,7 @@ namespace nwacc
 			}
 			else
 			{
-				current->element = value;
+				current->value = value;
 			}
 
 			this->balance(current);
@@ -692,7 +695,7 @@ namespace nwacc
 		 *@param current
 		 *@param previous
 		 */
-		iterator insert(T && value, const K && key, node * & current, node * previous = nullptr)
+		iterator insert(V && value, const K && key, node * & current, node * previous = nullptr)
 		{
 			if (current == nullptr)
 			{
@@ -711,7 +714,7 @@ namespace nwacc
 			}
 			else
 			{
-				current->element = value;
+				current->value = value;
 			}
 
 			this->balance(current);
@@ -762,17 +765,17 @@ namespace nwacc
 		 *@param current
 		 *@returns bool
 		 */
-		bool contains_value( T & value, node * current) const
+		bool contains_value( V & value, node * current) const
 		{
 			if (current == nullptr)
 			{
 				return false; // Does not exist in the tree :(
 			}
-			else if (value < current->element)
+			else if (value < current->value)
 			{
 				return this->contains_value(value, current->left);
 			}
-			else if (current->element < value)
+			else if (current->value < value)
 			{
 				return this->contains_value(value, current->right);
 			}
