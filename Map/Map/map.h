@@ -534,7 +534,7 @@ namespace nwacc
 		 */
 		iterator operator[](K & key)
 		{
-			return get(key,this->root);
+			return get_key_iterator(key,this->root);
 		}
 		/**
 		 *@returns iterator for the node with the given key
