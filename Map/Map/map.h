@@ -616,11 +616,11 @@ namespace nwacc
 			}//else, do_nothing()
 			if (current->key < key)
 			{
-				get(key, current->right);
+				get_key_iterator(key, current->right);
 			}//else, do_nothing()
 			else if (key < current->key)
 			{
-				get(key, current->left);
+				get_key_iterator(key, current->left);
 			}//else, do_nothing()
 			return iterator(current);
 		}
